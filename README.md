@@ -40,32 +40,145 @@ Use the trained model to predict  for a new input value .
 
 ## PROGRAM
 
-### Name:
+### Name: CHARU NETHRA R
 
-### Register Number:
+### Register Number: 212223230035
 
 ```python
+import torch
+import torch.nn as nn  # Neural network module
+import numpy as np
+import matplotlib.pyplot as plt  # For plotting
+%matplotlib inline
+
+X = torch.linspace(1,70,70).reshape(-1,1)
+
+torch.manual_seed(71) # to obtain reproducible results
+e = torch.randint(-8,9,(70,1),dtype=torch.float)
+#print(e.sum())
+
+y = 2*X + 1 + e
+print(y.shape)
+```
+
+
+
+```
+plt.scatter(X.numpy(), y.numpy(),color='red')  # Scatter plot of data points
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Generated Data for Linear Regression')
+plt.show()
+```
+
+
+```
+# Setting a manual seed for reproducibility
+torch.manual_seed(59)
+
+# Defining the model class
 class Model(nn.Module):
     def __init__(self, in_features, out_features):
         super().__init__()
-        #Include your code here
+        self.linear = nn.Linear(in_features, out_features)
+        
+    def forward(self, x):
+        y_pred = self.linear(x)
+        return y_pred
+
+# Creating an instance of the model
+torch.manual_seed(59)
+model = Model(1, 1)
+print('Weight:', model.linear.weight.item())
+print('Bias:  ', model.linear.bias.item())
+```
 
 
+```
+loss_function = nn.MSELoss()  # Mean Squared Error (MSE) loss
 
-# Initialize the Model, Loss Function, and Optimizer
+optimizer = torch.optim.SGD(model.parameters(), lr=0.0001)  # Stochastic Gradient Descent
+
+epochs = 50  # Number of training iterations
+losses = []  # List to store loss values
+
+for epoch in range(1, epochs + 1):  # Start from 1 to 50
+    optimizer.zero_grad()  # Clear previous gradients
+    y_pred = model(X)  # Forward pass
+    loss = loss_function(y_pred, y)  # Compute loss
+    losses.append(loss.item())  # Store loss value
+    
+    loss.backward()  # Compute gradients
+    optimizer.step()  # Update weights
+
+    # Print loss, weight, and bias for EVERY epoch (1 to 50)
+    print(f'epoch: {epoch:2}  loss: {loss.item():10.8f}  '
+          f'weight: {model.linear.weight.item():10.8f}  '
+          f'bias: {model.linear.bias.item():10.8f}')
 
 ```
 
+
+```
+plt.plot(range(epochs), losses)
+plt.ylabel('Loss')
+plt.xlabel('epoch');
+plt.show()
+
+```
+
+
+
+```
+# Automatically determine x-range
+x1 = torch.tensor([X.min().item(), X.max().item()])
+
+# Extract model parameters
+w1, b1 = model.linear.weight.item(), model.linear.bias.item()
+
+# Compute y1 (predicted values)
+y1 = x1 * w1 + b1
+
+```
+
+
+
+```
+# Print weight, bias, and x/y values
+print(f'Final Weight: {w1:.8f}, Final Bias: {b1:.8f}')
+print(f'X range: {x1.numpy()}')
+print(f'Predicted Y values: {y1.numpy()}')
+```
+
+
+
+```
+# Plot original data and best-fit line
+plt.scatter(X.numpy(), y.numpy(), label="Original Data")
+plt.plot(x1.numpy(), y1.numpy(), 'r', label="Best-Fit Line")
+plt.xlabel('x')
+plt.ylabel('y')
+plt.title('Trained Model: Best-Fit Line')
+plt.legend()
+plt.show()
+```
+
 ### Dataset Information
-Include screenshot of the generated data
+<img width="1390" height="918" alt="image" src="https://github.com/user-attachments/assets/b70726d5-5b69-46f2-9ba0-bf12c944098b" />
+
 
 ### OUTPUT
-Training Loss Vs Iteration Plot
-Best Fit line plot
-Include your plot here
+### Training Loss Vs Iteration Plot
+<img width="1090" height="932" alt="image" src="https://github.com/user-attachments/assets/0c0ca67d-3a1b-4635-93d6-6defb82563d0" />
+
+
+### Best Fit line plot
+<img width="1392" height="926" alt="image" src="https://github.com/user-attachments/assets/d0b37307-648a-43ca-ab9d-71a0366d3a1d" />
+
 
 ### New Sample Data Prediction
-Include your sample input and output here
+
+<img width="372" height="64" alt="image" src="https://github.com/user-attachments/assets/15e63bf9-1ef3-42b1-aff7-c422bfb4005d" />
 
 ## RESULT
 Thus, a neural network regression model was successfully developed and trained using PyTorch.
